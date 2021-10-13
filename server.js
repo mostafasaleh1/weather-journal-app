@@ -44,7 +44,8 @@ app.use(express.static('website')); // making access to the client-side code.
  */
 const port = 1999; // creating a port
 app.listen(port, () => { // creating a variable called server and assigning this fuction to test if the server is running through node.js or not.
-    console.log(`the server is running on localhost:${port}`); // printing that the server is running on local host of number = port.
+    console.log("Server is running"); 
+    console.log(`You're on http://localhost:${port}`); // printing that the server is running on local host of number = port.
 });
 
 
@@ -61,7 +62,7 @@ app.get("/all", (req, res) => { // This function indicates that whenever the lin
  */
 app.post("/post", (req, res) => { // // This function indicates that whenever the link http://localhost:1999/post is visited the server would respond with the projectData object.
     projectData = { // here we've changed the content of the projectData object to match the ruberic.
-        temperature: req.body.temperature, // I've changed the content of the temperature property to match the body of the request.
+        temp: req.body.temp, // I've changed the content of the temperature property to match the body of the request.
         date: req.body.date, // I've changed the content of the date property to match the body of the request.
         userResponse: req.body.userResponse, // I've changed the content of the userResponse property to match the body of the request.
     };
