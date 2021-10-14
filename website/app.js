@@ -8,7 +8,7 @@ const baseUrl = "http://api.openweathermap.org/data/2.5/forecast?zip="; // this 
 
 // Create a new date instance dynamically with JS
 let d = new Date();
-let newDate = d.getMonth()+'.'+ d.getDate()+'.'+ d.getFullYear();
+let newDate = (d.getMonth()+1)+'.'+ d.getDate()+'.'+ d.getFullYear(); // i've added one to the month bit because the getmonth() function in javascript starts from zero while the year and day start from one.
 
 
 
@@ -43,7 +43,6 @@ let newDate = d.getMonth()+'.'+ d.getDate()+'.'+ d.getFullYear();
 
 
 
-
  /**
   * chaining another Promise that makes a POST request to add the API data
   */
@@ -61,6 +60,8 @@ catch (error) {
     console.log("error", error); // catching error.
 }
 }
+
+
 
 /**
  *  Updating UI 
