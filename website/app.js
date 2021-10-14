@@ -25,21 +25,28 @@ let newDate = (d.getMonth()+1)+'.'+ d.getDate()+'.'+ d.getFullYear(); // i've ad
 /**
  * Creating an event listener for the element with the id: generate, with a callback function to execute when it is clicked.
  */
+ function callback() { // when clicking on the button, the do the following function.
+    emptyData(); // this function enables us to start over and makes the boxes empty for another input and output.
+    let data = { // idenftifying the content of the data object which will be 
+        userEnteredZipCode: document.getElementById("zip").value, // giving the property userEnteredZipCode the value of the zip in the textbox entered by the user.
+        userResponse: document.getElementById("feelings").value, // giving the property content the value of the feelings text in the textbox entered by the user.
+        date: newDate // determining the time now.
+    };
+
+    //Post Data To Api For Get Zip Code Information
+    fetchApiData(data.userEnteredZipCode, key).then((zip) => { // fetching the data from the weather api using the above function.
+        data.temp = zip.list[0].main.temp; // Posting Data to save and display in holder section using the bleow function post.
+        POST(data); // usning function post.
+    })
+}
+
+
+
+/**
+ * adding event listener for the button.
+ */
  var button = document.getElementById('generate');
- button.addEventListener('click', () => { // when clicking on the button, the do the following function.
-     emptyData(); // this function enables us to start over and makes the boxes empty for another input and output.
-     let data = { // idenftifying the content of the data object which will be 
-         userEnteredZipCode: document.getElementById("zip").value, // giving the property userEnteredZipCode the value of the zip in the textbox entered by the user.
-         userResponse: document.getElementById("feelings").value, // giving the property content the value of the feelings text in the textbox entered by the user.
-         date: newDate // determining the time now.
-     };
- 
-     //Post Data To Api For Get Zip Code Information
-     fetchApiData(data.userEnteredZipCode, key).then((zip) => { // fetching the data from the weather api using the above function.
-         data.temp = zip.list[0].main.temp; // Posting Data to save and display in holder section using the bleow function post.
-         POST(data); // usning function post.
-     })
- });
+ button.addEventListener('click', callback);
 
 
 
