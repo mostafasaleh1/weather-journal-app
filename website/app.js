@@ -2,7 +2,7 @@
 /**
  * Declaring the OpenWeatherMap's credentials.
  */
-const apiKey = "&appid=9a58e300e2613900f60cd02f3a331e03&units=imperial"; // this is the default secure key of the api for my account.
+const key = "&appid=9a58e300e2613900f60cd02f3a331e03&units=imperial"; // this is the default secure key of the api for my account.
 const localhostUrl = "http://localhost:1999/";
 const baseUrl = "http://api.openweathermap.org/data/2.5/forecast?zip="; // this is the base URL for the local server.
 
@@ -15,7 +15,7 @@ let newDate = (d.getMonth()+1)+'.'+ d.getDate()+'.'+ d.getFullYear(); // i've ad
 /**
  * Writing an async function that uses fetch() to make a GET request to the OpenWeatherMap API.
  */
- async function fetchApiData(userEnteredZipCode) { // this function is used to fetch the data from the web api which is corresponding to the given zip code.
+ async function fetchApiData(userEnteredZipCode, apiKey) { // this function is used to fetch the data from the web api which is corresponding to the given zip code.
     let zipCodeData = await fetch(baseUrl+userEnteredZipCode+apiKey); // this is the combination of the baseUrl, zip code which is entered by the user and the apiKey provided, and all of that are the link to a specific zip code data on the openweathermap.org website api.
     return zipCodeData.json(); // fetching data from the from the api using the url and credential key provided, we've used await to wait until the data is present as there could be some delay.
 }
@@ -35,7 +35,7 @@ let newDate = (d.getMonth()+1)+'.'+ d.getDate()+'.'+ d.getFullYear(); // i've ad
      };
  
      //Post Data To Api For Get Zip Code Information
-     fetchApiData(data.userEnteredZipCode).then((zip) => { // fetching the data from the weather api using the above function.
+     fetchApiData(data.userEnteredZipCode, key).then((zip) => { // fetching the data from the weather api using the above function.
          data.temp = zip.list[0].main.temp; // Posting Data to save and display in holder section using the bleow function post.
          POST(data); // usning function post.
      })
