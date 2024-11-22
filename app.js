@@ -5,15 +5,15 @@ let newDate = d.toDateString();
 // The URL to retrieve weather information from his API (country : US)
 const baseURL = "https://api.openweathermap.org/data/2.5/weather?zip=";
 
-// // Personal API Key for OpenWeatherMap API
-// &units=metric to get the Celsius Temperature
+// Personal API Key for OpenWeatherMap API &units=metric to get the Celsius Temperature
 const apiKey = ",&appid=d24bf70d6dae818a6893be61edd0ae3c&units=metric";
 
-// the URL of the server to post data
-const server = "http://127.0.0.1:4000";
+// The URL of the server to post data
+const server = ""; // Relative URL as the server and static files are served from the same domain
 
-// showing the error to the user
+// Showing the error to the user
 const error = document.getElementById("error");
+
 /**
  * // generateData //
  * function to get input values
@@ -22,15 +22,14 @@ const error = document.getElementById("error");
  * post the data in the server
  * get the data to update UI
  */
-
 const generateData = () => { 
-  //get value after click on the button
+  // Get value after clicking the button
   const zip = document.getElementById("zip").value;
   const feelings = document.getElementById("feelings").value;
 
   // getWeatherData return promise
   getWeatherData(zip).then((data) => {
-    //making sure from the received data to execute rest of the steps
+    // Making sure from the received data to execute rest of the steps
     if (data) {
       const {
         main: { temp },
@@ -41,7 +40,7 @@ const generateData = () => {
       const info = {
         newDate,
         city,
-        temp: Math.round(temp), // to get integer number
+        temp: Math.round(temp), // to get an integer number
         description,
         feelings,
       };
@@ -58,16 +57,16 @@ const generateData = () => {
 // Function called by event listener
 document.getElementById("generate").addEventListener("click", generateData);
 
-//Function to GET Web API Data
+// Function to GET Web API Data
 const getWeatherData = async (zip) => {
   try {
     const res = await fetch(baseURL + zip + apiKey);
     const data = await res.json();
 
     if (data.cod != 200) {
-      // display the error message on UI
+      // Display the error message on UI
       error.innerHTML = data.message;
-      setTimeout(_=> error.innerHTML = '', 2000)
+      setTimeout(_=> error.innerHTML = '', 2000);
       throw `${data.message}`;
     }
 
@@ -96,8 +95,7 @@ const postData = async (url = "", info = {}) => {
   }
 };
 
-//Function to GET Project Data
-// and updating UI by this data
+// Function to GET Project Data and update UI
 const updatingUI = async () => {
   const res = await fetch(server + "/all");
   try {

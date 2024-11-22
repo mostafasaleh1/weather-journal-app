@@ -10,7 +10,7 @@ const cors = require("cors");
 // Enable All CORS Requests
 app.use(cors());
 
-//body-parser allow the backend to access JSON data sent from the client using request.body in POST route handler.
+//body-parser allows the backend to access JSON data sent from the client using request.body in POST route handler.
 const bodyParser = require("body-parser");
 
 // parse application/x-www-form-urlencoded
@@ -23,21 +23,20 @@ app.use(bodyParser.json());
 projectData = {};
 
 // Initialize the main project folder
-app.use(express.static("website"));
+app.use(express.static("."));
 
 // Callback function to complete GET '/all'
 const getAll = (req, res) => res.status(200).send(projectData);
 // GET Route
 app.get("/all", getAll);
 
-
 // Callback function to complete POST '/add'
 const postData = (req, res) => {
     projectData = req.body;
     console.log(projectData);
     res.status(200).send(projectData);
-  }
-// GET Route
+}
+// POST Route
 app.post("/add", postData);
 
 const port = 4000;
