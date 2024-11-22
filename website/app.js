@@ -1,97 +1,114 @@
-/* Global Variables */
-/**
- * Declaring the OpenWeatherMap's credentials.
- */
-const key = "&appid=9a58e300e2613900f60cd02f3a331e03&units=imperial"; // this is the default secure key of the api for my account.
-const localhostUrl = "http://localhost:1999/";
-const baseUrl = "http://api.openweathermap.org/data/2.5/forecast?zip="; // this is the base URL for the local server.
-
-// Create a new date instance dynamically with JS
+// Creating a new date instance dynamically with JS
 let d = new Date();
-let newDate = (d.getMonth()+1)+'.'+ d.getDate()+'.'+ d.getFullYear(); // i've added one to the month bit because the getmonth() function in javascript starts from zero while the year and day start from one.
+let newDate = d.toDateString();
 
+// The URL to retrieve weather information from his API (country : US)
+const baseURL = "https://api.openweathermap.org/data/2.5/weather?zip=";
 
+// // Personal API Key for OpenWeatherMap API
+// &units=metric to get the Celsius Temperature
+const apiKey = ",&appid=d24bf70d6dae818a6893be61edd0ae3c&units=metric";
 
+// the URL of the server to post data
+const server = "http://127.0.0.1:4000";
+
+// showing the error to the user
+const error = document.getElementById("error");
 /**
- * Writing an async function that uses fetch() to make a GET request to the OpenWeatherMap API.
+ * // generateData //
+ * function to get input values
+ * call getWeatherData to fetch the data from API
+ * create object from API object by using destructuring
+ * post the data in the server
+ * get the data to update UI
  */
- async function fetchApiData(userEnteredZipCode, apiKey) { // this function is used to fetch the data from the web api which is corresponding to the given zip code.
-    let zipCodeData = await fetch(baseUrl+userEnteredZipCode+apiKey); // this is the combination of the baseUrl, zip code which is entered by the user and the apiKey provided, and all of that are the link to a specific zip code data on the openweathermap.org website api.
-    return zipCodeData.json(); // fetching data from the from the api using the url and credential key provided, we've used await to wait until the data is present as there could be some delay.
-}
 
+const generateData = () => { 
+  //get value after click on the button
+  const zip = document.getElementById("zip").value;
+  const feelings = document.getElementById("feelings").value;
 
+  // getWeatherData return promise
+  getWeatherData(zip).then((data) => {
+    //making sure from the received data to execute rest of the steps
+    if (data) {
+      const {
+        main: { temp },
+        name: city,
+        weather: [{ description }],
+      } = data;
 
-/**
- * Creating an event listener for the element with the id: generate, with a callback function to execute when it is clicked.
- */
- function callback() { // when clicking on the button, the do the following function.
-    emptyData(); // this function enables us to start over and makes the boxes empty for another input and output.
-    let data = { // idenftifying the content of the data object which will be 
-        userEnteredZipCode: document.getElementById("zip").value, // giving the property userEnteredZipCode the value of the zip in the textbox entered by the user.
-        userResponse: document.getElementById("feelings").value, // giving the property content the value of the feelings text in the textbox entered by the user.
-        date: newDate // determining the time now.
-    };
+      const info = {
+        newDate,
+        city,
+        temp: Math.round(temp), // to get integer number
+        description,
+        feelings,
+      };
 
-    //Post Data To Api For Get Zip Code Information
-    fetchApiData(data.userEnteredZipCode, key).then((zip) => { // fetching the data from the weather api using the above function.
-        data.temp = zip.list[0].main.temp; // Posting Data to save and display in holder section using the bleow function post.
-        POST(data); // usning function post.
-    })
-}
+      postData(server + "/add", info);
 
-
-
-/**
- * adding event listener for the button.
- */
- var button = document.getElementById('generate');
- button.addEventListener('click', callback);
-
-
-
- /**
-  * chaining another Promise that makes a POST request to add the API data
-  */
-async function POST(data) { // this function is used to hold and save data.
-    let res = await fetch(localhostUrl+"post", { //awaiting for the fetch from the server and then assigning it to the response variable which we will use later.
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data), // converting the data variable to json.
-    });
-    try{res.json().then(data => { //converting data to json and then sending data to the 
-        updateUI(); // calling the function upadateUI to update the ui at this moment.
-    })
-}
-catch (error) {
-    console.log("error", error); // catching error.
-}
-}
-
-
-
-/**
- *  Updating UI 
- */
-async function updateUI() { // chaining another Promise that updates the UI dynamically .
-    let res = await fetch(localhostUrl+"all");
-    try {
-        res.json().then(data => {
-            document.getElementById('date').textContent = `Date: ${data.date}`;
-            document.getElementById('temp').textContent = `Temperature in Fehrinheit: ${data.temp}`; 
-            document.getElementById('content').textContent = `Feeling: ${data.userResponse}`;
-        })
-    } 
-    catch (error) {
-        console.log("error", error);
+      updatingUI();
+      document.getElementById('entry').style.opacity = 1;
     }
-}
+  });
+};
 
+// Event listener to add function to existing HTML DOM element
+// Function called by event listener
+document.getElementById("generate").addEventListener("click", generateData);
 
+//Function to GET Web API Data
+const getWeatherData = async (zip) => {
+  try {
+    const res = await fetch(baseURL + zip + apiKey);
+    const data = await res.json();
 
- function emptyData() {
-    document.getElementById('date').textContent = "";
-    document.getElementById('temp').textContent = "";
-    document.getElementById('content').textContent = "";
-    button.textContent = "Regenerate";
-}
+    if (data.cod != 200) {
+      // display the error message on UI
+      error.innerHTML = data.message;
+      setTimeout(_=> error.innerHTML = '', 2000)
+      throw `${data.message}`;
+    }
+
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// Function to POST data
+const postData = async (url = "", info = {}) => {
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(info),
+  });
+
+  try {
+    const newData = await res.json();
+    console.log(`You just saved`, newData);
+    return newData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+//Function to GET Project Data
+// and updating UI by this data
+const updatingUI = async () => {
+  const res = await fetch(server + "/all");
+  try {
+    const savedData = await res.json();
+
+    document.getElementById("date").innerHTML = savedData.newDate;
+    document.getElementById("city").innerHTML = savedData.city;
+    document.getElementById("temp").innerHTML = savedData.temp + '&degC';
+    document.getElementById("description").innerHTML = savedData.description;
+    document.getElementById("content").innerHTML = savedData.feelings;
+  } catch (error) {
+    console.log(error);
+  }
+};
